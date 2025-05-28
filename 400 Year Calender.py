@@ -31,7 +31,6 @@ def print_month_calendar(year, month):
     first_day = get_first_day_of_month(year, month)
     days = get_days_in_month(month, year)
 
-    # Get today's date
     today = datetime.date.today()
     is_current_month = (today.year == year and today.month == month)
 
@@ -47,11 +46,40 @@ def print_month_calendar(year, month):
                 line += "   "
             else:
                 if is_current_month and current_day == today.day:
-                    line += f"[{current_day:2}]"  # Highlight today
+                    line += f"[{current_day:2}]"
                 else:
                     line += f"{current_day:2} "
                 current_day += 1
         print(line)
+
+def save_month_calendar_to_file(year, month, filename="calendar.txt"):
+    with open(filename, "w") as f:
+        f.write(f"{month_name[month]} {year}".center(20) + "\n")
+        f.write("Su Mo Tu We Th Fr Sa\n")
+
+        first_day = get_first_day_of_month(year, month)
+        days = get_days_in_month(month, year)
+
+        today = datetime.date.today()
+        is_current_month = (today.year == year and today.month == month)
+
+        current_day = 1
+        max_positions = first_day + days - 1
+        total_lines = (max_positions // 7) + (1 if max_positions % 7 else 0)
+
+        for week in range(total_lines):
+            line = ""
+            for day in range(7):
+                position = week * 7 + day
+                if position < first_day or current_day > days:
+                    line += "   "
+                else:
+                    if is_current_month and current_day == today.day:
+                        line += f"[{current_day:2}]"
+                    else:
+                        line += f"{current_day:2} "
+                    current_day += 1
+            f.write(line + "\n")
 
 def print_year_calendar(year):
     try:
@@ -77,6 +105,12 @@ def main():
                 if month_input in month_names:
                     month = month_names.index(month_input) + 1
                     print_month_calendar(year, month)
+
+                    # Ask to save
+                    save_choice = input("Save this calendar to file? (yes/no): ").strip().lower()
+                    if save_choice == 'yes':
+                        save_month_calendar_to_file(year, month)
+                        print("Calendar saved to calendar.txt.")
                 else:
                     print("Invalid month name. Please use full month names (e.g., January).")
             else:
@@ -100,7 +134,7 @@ def run_tests():
     assert get_first_day_of_month(2025, 1) == 3
     print("All tests passed!")
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     run_tests()
     print("Welcome to the 400-Year Calendar Generator!")
     main()
